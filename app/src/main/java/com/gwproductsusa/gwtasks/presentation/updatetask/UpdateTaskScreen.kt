@@ -46,10 +46,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.gwproductsusa.gwtasks.presentation.common.components.TaskInfoHeader
+import com.gwproductsusa.gwtasks.presentation.updatetask.components.TaskInfoHeader
 import com.gwproductsusa.gwtasks.ui.theme.OdooPurple
 import com.gwproductsusa.gwtasks.ui.theme.TextPrimary
-import com.gwproductsusa.gwtasks.ui.theme.TextSecondary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

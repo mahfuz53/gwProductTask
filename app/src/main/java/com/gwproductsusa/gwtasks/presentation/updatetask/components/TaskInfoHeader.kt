@@ -1,4 +1,4 @@
-package com.gwproductsusa.gwtasks.presentation.common.components
+package com.gwproductsusa.gwtasks.presentation.updatetask.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
