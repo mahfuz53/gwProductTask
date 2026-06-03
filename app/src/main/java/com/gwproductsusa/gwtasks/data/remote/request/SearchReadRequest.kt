@@ -9,7 +9,7 @@ class SearchReadRequest(
     userId: Int,
     password: String,
     model: String,
-    domain: List<List<Any?>> = emptyList(),
+    domain: OdooSearchDomain = OdooDomain.empty(),
     fields: List<String>,
     limit: Int? = null
 ) : ExecuteKwRequest(
@@ -41,7 +41,7 @@ class SearchReadRequest(
             userId = userId,
             password = password,
             model = "res.users",
-            domain = listOf(listOf("id", "=", targetUserId)),
+            domain = OdooDomain.eq("id", targetUserId),
             fields = listOf("id", "name", "email", "login")
         )
 
@@ -59,7 +59,7 @@ class SearchReadRequest(
             userId = userId,
             password = password,
             model = "project.task",
-            domain = emptyList(),
+            domain = OdooDomain.empty(),
             fields = listOf("id", "name", "stage_id", "description", "date_deadline"),
             limit = limit
         )

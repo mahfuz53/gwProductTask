@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.gwproductsusa.gwtasks"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.gwproductsusa.gwtasks"
         minSdk = 29
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -40,6 +40,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -74,7 +75,6 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp)
-    implementation(libs.okhttp.logging)
     implementation(libs.gson)
 
     implementation(libs.kotlinx.coroutines.android)
