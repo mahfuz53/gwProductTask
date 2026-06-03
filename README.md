@@ -46,19 +46,6 @@ The app is designed for clarity and speed: focused screens, clear feedback (load
 
 ---
 
-## Screenshots
-
-_Add screenshots here when available._
-
-| Login | Dashboard | Update Task |
-|:-----:|:---------:|:-----------:|
-| _Coming soon_ | _Coming soon_ | _Coming soon_ |
-
-| Create Task | Update Account |
-|:-----------:|:--------------:|
-| _Coming soon_ | _Coming soon_ |
-
----
 
 ## Architecture
 
