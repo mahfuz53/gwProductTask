@@ -38,6 +38,9 @@ class LoginViewModel @Inject constructor(
             is LoginUiAction.PasswordChanged -> _uiState.update {
                 it.copy(password = action.password, passwordError = null, errorMessage = null)
             }
+            LoginUiAction.PasswordVisibilityToggled -> _uiState.update {
+                it.copy(isPasswordVisible = !it.isPasswordVisible)
+            }
             LoginUiAction.LoginClicked -> login()
             LoginUiAction.ErrorDismissed -> _uiState.update { it.copy(errorMessage = null) }
         }
