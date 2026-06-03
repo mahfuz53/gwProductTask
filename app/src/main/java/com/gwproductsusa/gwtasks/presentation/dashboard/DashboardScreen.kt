@@ -8,7 +8,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -22,6 +27,7 @@ import com.gwproductsusa.gwtasks.presentation.dashboard.components.DashboardLoad
 import com.gwproductsusa.gwtasks.presentation.dashboard.components.DashboardTopBar
 import com.gwproductsusa.gwtasks.presentation.dashboard.components.ProfileCard
 import com.gwproductsusa.gwtasks.presentation.dashboard.components.TaskCard
+import com.gwproductsusa.gwtasks.ui.theme.OdooPurple
 import com.gwproductsusa.gwtasks.ui.theme.SurfaceGray
 import androidx.compose.foundation.background
 import androidx.compose.runtime.remember
@@ -29,7 +35,8 @@ import androidx.compose.runtime.remember
 @Composable
 fun DashboardScreen(
     uiState: DashboardUiState,
-    onAction: (DashboardUiAction) -> Unit
+    onAction: (DashboardUiAction) -> Unit,
+    onCreateTaskClick: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val onRefresh = rememberUpdatedState { onAction(DashboardUiAction.Refresh) }
@@ -51,6 +58,13 @@ fun DashboardScreen(
         }
     }
 
+    LaunchedEffect(uiState.successMessage) {
+        uiState.successMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            onAction(DashboardUiAction.SuccessDismissed)
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = SurfaceGray,
@@ -61,7 +75,18 @@ fun DashboardScreen(
                 isRefreshing = uiState.isRefreshing
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        floatingActionButton = {
+            if (!showLoading) {
+                FloatingActionButton(
+                    onClick = onCreateTaskClick,
+                    containerColor = OdooPurple,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Create task")
+                }
+            }
+        }
     ) { padding ->
         if (showLoading) {
             DashboardLoading(

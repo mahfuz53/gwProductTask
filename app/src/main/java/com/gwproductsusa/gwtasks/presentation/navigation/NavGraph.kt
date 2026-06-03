@@ -9,7 +9,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.gwproductsusa.gwtasks.presentation.createtask.CreateTaskScreen
+import com.gwproductsusa.gwtasks.presentation.createtask.CreateTaskUiEvent
+import com.gwproductsusa.gwtasks.presentation.createtask.CreateTaskViewModel
 import com.gwproductsusa.gwtasks.presentation.dashboard.DashboardScreen
+import com.gwproductsusa.gwtasks.presentation.dashboard.DashboardUiAction
 import com.gwproductsusa.gwtasks.presentation.dashboard.DashboardUiEvent
 import com.gwproductsusa.gwtasks.presentation.dashboard.DashboardViewModel
 import com.gwproductsusa.gwtasks.presentation.login.LoginScreen
@@ -64,7 +68,42 @@ fun GwTasksNavGraph(
                 }
             }
 
+            LaunchedEffect(navController.currentBackStackEntry) {
+                val handle = navController.currentBackStackEntry?.savedStateHandle ?: return@LaunchedEffect
+                handle.getStateFlow(DashboardViewModel.REFRESH_DASHBOARD_KEY, false)
+                    .collect { shouldRefresh ->
+                        if (shouldRefresh) {
+                            viewModel.onAction(DashboardUiAction.RefreshAfterTaskCreated)
+                            handle[DashboardViewModel.REFRESH_DASHBOARD_KEY] = false
+                        }
+                    }
+            }
+
             DashboardScreen(
+                uiState = uiState,
+                onAction = viewModel::onAction,
+                onCreateTaskClick = { navController.navigate(Routes.CREATE_TASK) }
+            )
+        }
+
+        composable(Routes.CREATE_TASK) {
+            val viewModel: CreateTaskViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+            LaunchedEffect(Unit) {
+                viewModel.uiEvents.collectLatest { event ->
+                    when (event) {
+                        CreateTaskUiEvent.NavigateBack -> navController.popBackStack()
+                        CreateTaskUiEvent.NavigateBackAndRefreshDashboard -> {
+                            navController.getBackStackEntry(Routes.DASHBOARD)
+                                .savedStateHandle[DashboardViewModel.REFRESH_DASHBOARD_KEY] = true
+                            navController.popBackStack()
+                        }
+                    }
+                }
+            }
+
+            CreateTaskScreen(
                 uiState = uiState,
                 onAction = viewModel::onAction
             )

@@ -43,8 +43,13 @@ class DashboardViewModel @Inject constructor(
     fun onAction(action: DashboardUiAction) {
         when (action) {
             DashboardUiAction.Refresh -> loadDashboard(isRefresh = true)
+            DashboardUiAction.RefreshAfterTaskCreated -> {
+                _uiState.update { it.copy(successMessage = "Task created successfully!") }
+                loadDashboard(isRefresh = true)
+            }
             DashboardUiAction.Logout -> logout()
             DashboardUiAction.ErrorDismissed -> _uiState.update { it.copy(errorMessage = null) }
+            DashboardUiAction.SuccessDismissed -> _uiState.update { it.copy(successMessage = null) }
         }
     }
 
@@ -69,6 +74,7 @@ class DashboardViewModel @Inject constructor(
             when (result) {
                 is Result.Success -> {
                     val (user, tasks) = result.data
+                    val successMessage = _uiState.value.successMessage
                     _uiState.value = DashboardUiState(
                         isLoading = false,
                         isRefreshing = false,
@@ -76,7 +82,8 @@ class DashboardViewModel @Inject constructor(
                         userEmail = user.email.ifBlank { user.login },
                         userInitials = buildInitials(user.name),
                         tasks = tasks.map { it.toTaskItemUiState() },
-                        errorMessage = null
+                        errorMessage = null,
+                        successMessage = successMessage
                     )
                 }
                 is Result.Error -> {
@@ -115,5 +122,9 @@ class DashboardViewModel @Inject constructor(
             parts.isNotEmpty() -> parts.first().take(2).uppercase()
             else -> "?"
         }
+    }
+
+    companion object {
+        const val REFRESH_DASHBOARD_KEY = "refresh_dashboard"
     }
 }

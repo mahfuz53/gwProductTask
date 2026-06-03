@@ -11,6 +11,7 @@ data class DashboardUiState(
     val userInitials: String = "",
     val tasks: List<TaskItemUiState> = emptyList(),
     val errorMessage: String? = null,
+    val successMessage: String? = null,
     val isRefreshing: Boolean = false
 )
 
@@ -30,6 +31,8 @@ sealed interface DashboardUiEvent {
 
 sealed interface DashboardUiAction {
     data object Refresh : DashboardUiAction
+    data object RefreshAfterTaskCreated : DashboardUiAction
     data object Logout : DashboardUiAction
     data object ErrorDismissed : DashboardUiAction
+    data object SuccessDismissed : DashboardUiAction
 }

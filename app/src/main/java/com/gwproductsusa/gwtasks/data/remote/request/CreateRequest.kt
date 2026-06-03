@@ -22,8 +22,7 @@ class CreateRequest(
         stringArg(password),
         stringArg(model),
         stringArg("create"),
-        toJsonElement(listOf(values)),
-        toJsonElement(emptyMap<String, Any?>())
+        toJsonElement(listOf(values))
     )
 
     companion object {

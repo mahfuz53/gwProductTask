@@ -1,10 +1,10 @@
 package com.gwproductsusa.gwtasks.data.remote.api
 
+import com.google.gson.JsonElement
 import com.gwproductsusa.gwtasks.data.remote.dto.JsonRpcRequestDto
 import com.gwproductsusa.gwtasks.data.remote.dto.JsonRpcResponseDto
 import com.gwproductsusa.gwtasks.data.remote.dto.TaskDto
 import com.gwproductsusa.gwtasks.data.remote.dto.UserDto
-import com.google.gson.JsonElement
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -18,4 +18,7 @@ interface OdooApi {
 
     @POST("jsonrpc")
     suspend fun searchReadTasks(@Body request: JsonRpcRequestDto): JsonRpcResponseDto<List<TaskDto>>
+
+    @POST("jsonrpc")
+    suspend fun createTask(@Body request: JsonRpcRequestDto): JsonRpcResponseDto<Int>
 }

@@ -7,11 +7,14 @@ import com.gwproductsusa.gwtasks.core.error.ErrorMapper
 import com.gwproductsusa.gwtasks.core.logging.AppLogger
 import com.gwproductsusa.gwtasks.core.session.SessionManager
 import com.gwproductsusa.gwtasks.core.util.Result
+import com.gwproductsusa.gwtasks.core.util.OdooConstants
 import com.gwproductsusa.gwtasks.data.mapper.toDomainTasks
 import com.gwproductsusa.gwtasks.data.mapper.toDomainUsers
 import com.gwproductsusa.gwtasks.data.remote.api.OdooApi
+import com.gwproductsusa.gwtasks.data.remote.request.CreateRequest
 import com.gwproductsusa.gwtasks.data.remote.request.LoginRequest
 import com.gwproductsusa.gwtasks.data.remote.request.SearchReadRequest
+import com.gwproductsusa.gwtasks.domain.model.CreateTaskInput
 import com.gwproductsusa.gwtasks.domain.model.Task
 import com.gwproductsusa.gwtasks.domain.model.User
 import com.gwproductsusa.gwtasks.domain.repository.OdooRepository
@@ -132,6 +135,43 @@ class OdooRepositoryImpl @Inject constructor(
                 }
             } catch (e: Exception) {
                 appLogger.logException(AppLogger.TAG_REPOSITORY, e, "fetchDashboardData() failed")
+                Result.Error(errorMapper.mapThrowable(e))
+            }
+        }
+
+    override suspend fun createTask(input: CreateTaskInput): Result<Int> =
+        executeAuthenticated { uid, password, database ->
+            try {
+                appLogger.d(AppLogger.TAG_REPOSITORY, "createTask() name=${input.name}")
+                val values = buildMap<String, Any?> {
+                    put("name", input.name)
+                    put("project_id", OdooConstants.DEFAULT_PROJECT_ID)
+                    put("stage_id", OdooConstants.DEFAULT_STAGE_ID)
+                    put("description", input.description.ifBlank { false })
+                    put("date_deadline", input.dateDeadline)
+                }
+                val request = CreateRequest.forTask(
+                    gson = gson,
+                    database = database,
+                    userId = uid,
+                    password = password,
+                    values = values,
+                    requestId = 12
+                ).build()
+                val response = api.createTask(request)
+                response.error?.let {
+                    appLogger.logJsonRpcError("create_task", gson.toJson(it))
+                    return@executeAuthenticated Result.Error(errorMapper.mapJsonRpcError(it))
+                }
+                val taskId = response.result
+                if (taskId == null || taskId <= 0) {
+                    Result.Error(AppError.Unknown("Failed to create task."))
+                } else {
+                    appLogger.d(AppLogger.TAG_REPOSITORY, "createTask() success id=$taskId")
+                    Result.Success(taskId)
+                }
+            } catch (e: Exception) {
+                appLogger.logException(AppLogger.TAG_REPOSITORY, e, "createTask() failed")
                 Result.Error(errorMapper.mapThrowable(e))
             }
         }
