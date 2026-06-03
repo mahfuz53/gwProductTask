@@ -154,7 +154,7 @@ fun ProfileCard(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = userName,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary,
                     maxLines = 1,

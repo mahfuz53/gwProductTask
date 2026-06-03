@@ -72,7 +72,8 @@ class SessionManager @Inject constructor(
         password: String,
         databaseName: String = OdooConstants.DATABASE_NAME
     ) {
-        encryptedPrefs.edit().putString(KEY_PASSWORD, password).apply()
+        // commit() ensures password is persisted before navigation triggers dashboard API calls
+        encryptedPrefs.edit().putString(KEY_PASSWORD, password).commit()
         dataStore.edit { prefs ->
             prefs[KEY_USER_ID] = userId
             prefs[KEY_EMAIL] = email

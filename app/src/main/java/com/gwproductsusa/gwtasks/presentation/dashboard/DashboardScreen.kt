@@ -14,9 +14,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +24,7 @@ import com.gwproductsusa.gwtasks.presentation.dashboard.components.ProfileCard
 import com.gwproductsusa.gwtasks.presentation.dashboard.components.TaskCard
 import com.gwproductsusa.gwtasks.ui.theme.SurfaceGray
 import androidx.compose.foundation.background
+import androidx.compose.runtime.remember
 
 @Composable
 fun DashboardScreen(
@@ -37,15 +35,13 @@ fun DashboardScreen(
     val onRefresh = rememberUpdatedState { onAction(DashboardUiAction.Refresh) }
     val onLogout = rememberUpdatedState { onAction(DashboardUiAction.Logout) }
 
-    val showLoading by remember {
-        derivedStateOf { uiState.isLoading && uiState.tasks.isEmpty() }
-    }
+    // Derive directly from uiState — remember+derivedStateOf does not track plain parameters
+    // and will keep the initial loading value forever across recompositions.
+    val showLoading = uiState.isLoading && uiState.userName.isEmpty()
 
-    val taskCountText by remember {
-        derivedStateOf {
-            val count = uiState.tasks.size
-            if (count == 1) "1 Task" else "$count Tasks"
-        }
+    val taskCountText = run {
+        val count = uiState.tasks.size
+        if (count == 1) "1 Task" else "$count Tasks"
     }
 
     LaunchedEffect(uiState.errorMessage) {

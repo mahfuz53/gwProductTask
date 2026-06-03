@@ -51,6 +51,7 @@ class DashboardViewModel @Inject constructor(
     private fun loadDashboard(isRefresh: Boolean = false) {
         viewModelScope.launch {
             if (!checkSessionUseCase()) {
+                _uiState.update { it.copy(isLoading = false, isRefreshing = false) }
                 _uiEvents.emit(DashboardUiEvent.NavigateToLogin)
                 return@launch
             }
@@ -64,19 +65,19 @@ class DashboardViewModel @Inject constructor(
                 )
             }
 
-            when (val result = withContext(ioDispatcher) { loadDashboardUseCase(userId) }) {
+            val result = withContext(ioDispatcher) { loadDashboardUseCase(userId) }
+            when (result) {
                 is Result.Success -> {
                     val (user, tasks) = result.data
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            isRefreshing = false,
-                            userName = user.name,
-                            userEmail = user.email.ifBlank { user.login },
-                            userInitials = buildInitials(user.name),
-                            tasks = tasks.map { it.toTaskItemUiState() }
-                        )
-                    }
+                    _uiState.value = DashboardUiState(
+                        isLoading = false,
+                        isRefreshing = false,
+                        userName = user.name,
+                        userEmail = user.email.ifBlank { user.login },
+                        userInitials = buildInitials(user.name),
+                        tasks = tasks.map { it.toTaskItemUiState() },
+                        errorMessage = null
+                    )
                 }
                 is Result.Error -> {
                     _uiState.update {
