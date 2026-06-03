@@ -30,7 +30,7 @@ The app is designed for clarity and speed: focused screens, clear feedback (load
 | Area                 | What you can do |
 |----------------------|-----------------|
 | **Login**            | Sign in with email and password (with show/hide password toggle) |
-| **Login Credential** |UserID : **`mahfuz53@gmail.com`** | password : **Mahfuz@123**
+| **Login Credential** |UserID : **`mahfuz53@gmail.com`** , password : **Mahfuz@123**
 | **Dashboard**        | See your profile card, task count, and tasks with status chips (Pending, In Progress, Completed) |
 | **Task details**     | Tap a task to view title, deadline, and update its stage |
 | **Create task**      | Add a task with name, description, and deadline date |
