@@ -11,7 +11,7 @@ open class ExecuteKwRequest(
     protected val password: String,
     protected val model: String,
     protected val odooMethod: String,
-    protected val domain: List<List<Any?>>,
+    protected val domain: OdooSearchDomain,
     protected val kwargs: Map<String, Any?>
 ) : JsonRpcRequestBuilder(gson, requestId) {
 
