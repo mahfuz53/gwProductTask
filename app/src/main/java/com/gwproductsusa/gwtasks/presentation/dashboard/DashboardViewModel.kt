@@ -47,6 +47,10 @@ class DashboardViewModel @Inject constructor(
                 _uiState.update { it.copy(successMessage = "Task created successfully!") }
                 loadDashboard(isRefresh = true)
             }
+            DashboardUiAction.RefreshAfterTaskUpdated -> {
+                _uiState.update { it.copy(successMessage = "Task updated successfully!") }
+                loadDashboard(isRefresh = true)
+            }
             DashboardUiAction.Logout -> logout()
             DashboardUiAction.ErrorDismissed -> _uiState.update { it.copy(errorMessage = null) }
             DashboardUiAction.SuccessDismissed -> _uiState.update { it.copy(successMessage = null) }
@@ -109,6 +113,7 @@ class DashboardViewModel @Inject constructor(
     private fun Task.toTaskItemUiState() = TaskItemUiState(
         id = id,
         name = name,
+        stageId = stageId,
         stageName = stageName,
         stage = TaskStage.fromStageName(stageName),
         description = description,
@@ -126,5 +131,6 @@ class DashboardViewModel @Inject constructor(
 
     companion object {
         const val REFRESH_DASHBOARD_KEY = "refresh_dashboard"
+        const val REFRESH_AFTER_TASK_UPDATED = "refresh_after_task_updated"
     }
 }

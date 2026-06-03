@@ -19,6 +19,7 @@ data class DashboardUiState(
 data class TaskItemUiState(
     val id: Int,
     val name: String,
+    val stageId: Int,
     val stageName: String,
     val stage: TaskStage,
     val description: String,
@@ -32,6 +33,7 @@ sealed interface DashboardUiEvent {
 sealed interface DashboardUiAction {
     data object Refresh : DashboardUiAction
     data object RefreshAfterTaskCreated : DashboardUiAction
+    data object RefreshAfterTaskUpdated : DashboardUiAction
     data object Logout : DashboardUiAction
     data object ErrorDismissed : DashboardUiAction
     data object SuccessDismissed : DashboardUiAction

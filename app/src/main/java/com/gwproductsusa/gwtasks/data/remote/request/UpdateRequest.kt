@@ -23,8 +23,7 @@ class UpdateRequest(
         stringArg(password),
         stringArg(model),
         stringArg("write"),
-        toJsonElement(recordIds),
-        toJsonElement(values)
+        toJsonElement(listOf(recordIds, values))
     )
 
     companion object {

@@ -36,7 +36,8 @@ import androidx.compose.runtime.remember
 fun DashboardScreen(
     uiState: DashboardUiState,
     onAction: (DashboardUiAction) -> Unit,
-    onCreateTaskClick: () -> Unit
+    onCreateTaskClick: () -> Unit,
+    onTaskClick: (TaskItemUiState) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val onRefresh = rememberUpdatedState { onAction(DashboardUiAction.Refresh) }
@@ -98,6 +99,7 @@ fun DashboardScreen(
             DashboardContent(
                 uiState = uiState,
                 taskCountText = taskCountText,
+                onTaskClick = onTaskClick,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
@@ -110,6 +112,7 @@ fun DashboardScreen(
 private fun DashboardContent(
     uiState: DashboardUiState,
     taskCountText: String,
+    onTaskClick: (TaskItemUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -143,7 +146,7 @@ private fun DashboardContent(
                 items = uiState.tasks,
                 key = { it.id }
             ) { task ->
-                TaskCard(task = task)
+                TaskCard(task = task, onClick = { onTaskClick(task) })
             }
         }
     }

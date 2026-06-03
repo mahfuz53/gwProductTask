@@ -6,6 +6,7 @@ import androidx.compose.runtime.Immutable
 data class Task(
     val id: Int,
     val name: String,
+    val stageId: Int,
     val stageName: String,
     val description: String,
     val dueDate: String

@@ -8,13 +8,16 @@ import com.gwproductsusa.gwtasks.core.logging.AppLogger
 import com.gwproductsusa.gwtasks.core.session.SessionManager
 import com.gwproductsusa.gwtasks.core.util.Result
 import com.gwproductsusa.gwtasks.core.util.OdooConstants
+import com.gwproductsusa.gwtasks.data.mapper.toDomainStages
 import com.gwproductsusa.gwtasks.data.mapper.toDomainTasks
 import com.gwproductsusa.gwtasks.data.mapper.toDomainUsers
 import com.gwproductsusa.gwtasks.data.remote.api.OdooApi
 import com.gwproductsusa.gwtasks.data.remote.request.CreateRequest
 import com.gwproductsusa.gwtasks.data.remote.request.LoginRequest
 import com.gwproductsusa.gwtasks.data.remote.request.SearchReadRequest
+import com.gwproductsusa.gwtasks.data.remote.request.UpdateRequest
 import com.gwproductsusa.gwtasks.domain.model.CreateTaskInput
+import com.gwproductsusa.gwtasks.domain.model.Stage
 import com.gwproductsusa.gwtasks.domain.model.Task
 import com.gwproductsusa.gwtasks.domain.model.User
 import com.gwproductsusa.gwtasks.domain.repository.OdooRepository
@@ -172,6 +175,43 @@ class OdooRepositoryImpl @Inject constructor(
                 }
             } catch (e: Exception) {
                 appLogger.logException(AppLogger.TAG_REPOSITORY, e, "createTask() failed")
+                Result.Error(errorMapper.mapThrowable(e))
+            }
+        }
+
+    override suspend fun fetchStages(): Result<List<Stage>> =
+        executeAuthenticated { uid, password, database ->
+            try {
+                val request = SearchReadRequest.forStages(
+                    gson = gson,
+                    database = database,
+                    userId = uid,
+                    password = password
+                ).build()
+                val response = api.searchReadStages(request)
+                response.error?.let { return@executeAuthenticated Result.Error(errorMapper.mapJsonRpcError(it)) }
+                Result.Success(response.result?.toDomainStages().orEmpty())
+            } catch (e: Exception) {
+                Result.Error(errorMapper.mapThrowable(e))
+            }
+        }
+
+    override suspend fun updateTaskStage(taskId: Int, stageId: Int): Result<Boolean> =
+        executeAuthenticated { uid, password, database ->
+            try {
+                val request = UpdateRequest.forTask(
+                    gson = gson,
+                    database = database,
+                    userId = uid,
+                    password = password,
+                    taskId = taskId,
+                    values = mapOf("stage_id" to stageId),
+                    requestId = 14
+                ).build()
+                val response = api.updateTask(request)
+                response.error?.let { return@executeAuthenticated Result.Error(errorMapper.mapJsonRpcError(it)) }
+                Result.Success(response.result == true)
+            } catch (e: Exception) {
                 Result.Error(errorMapper.mapThrowable(e))
             }
         }

@@ -63,5 +63,22 @@ class SearchReadRequest(
             fields = listOf("id", "name", "stage_id", "description", "date_deadline"),
             limit = limit
         )
+
+        fun forStages(
+            gson: Gson,
+            database: String,
+            userId: Int,
+            password: String,
+            requestId: Int = 2
+        ): SearchReadRequest = SearchReadRequest(
+            gson = gson,
+            requestId = requestId,
+            database = database,
+            userId = userId,
+            password = password,
+            model = "project.task.type",
+            domain = OdooDomain.empty(),
+            fields = listOf("id", "name")
+        )
     }
 }

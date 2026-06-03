@@ -7,11 +7,12 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 fun TaskDto.toDomain(): Task {
-    val stage = extractStageName(stageId)
+    val (stageIdValue, stageName) = extractStage(stageId)
     return Task(
         id = id,
         name = name,
-        stageName = stage,
+        stageId = stageIdValue,
+        stageName = stageName,
         description = extractDescription(description),
         dueDate = formatDueDate(dateDeadline)
     )
@@ -19,9 +20,19 @@ fun TaskDto.toDomain(): Task {
 
 fun List<TaskDto>.toDomainTasks(): List<Task> = map { it.toDomain() }
 
-private fun extractStageName(stageId: List<com.google.gson.JsonElement>?): String {
-    if (stageId == null || stageId.size < 2) return "Unknown"
-    return stageId[1].asString
+private fun extractStage(stageId: List<com.google.gson.JsonElement>?): Pair<Int, String> {
+    if (stageId == null || stageId.isEmpty()) return 0 to "Unknown"
+    val id = if (stageId[0].isJsonPrimitive && stageId[0].asJsonPrimitive.isNumber) {
+        stageId[0].asInt
+    } else {
+        0
+    }
+    val name = if (stageId.size >= 2 && stageId[1].isJsonPrimitive) {
+        stageId[1].asString
+    } else {
+        "Unknown"
+    }
+    return id to name
 }
 
 private fun extractDescription(description: com.google.gson.JsonElement?): String {
