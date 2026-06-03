@@ -192,12 +192,4 @@ app/src/main/java/com/gwproductsusa/gwtasks/
 └── ui/theme/       # Colors, typography, theme
 ```
 
----
-
-## License
-
-_Add your license here if applicable._
-
----
-
 **GW Tasks** — Odoo task management, simplified for mobile.
