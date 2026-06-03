@@ -1,5 +1,6 @@
 package com.gwproductsusa.gwtasks.presentation.updatetask
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -20,9 +22,11 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -39,9 +43,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.gwproductsusa.gwtasks.presentation.common.components.TaskInfoHeader
 import com.gwproductsusa.gwtasks.ui.theme.OdooPurple
+import com.gwproductsusa.gwtasks.ui.theme.TextPrimary
 import com.gwproductsusa.gwtasks.ui.theme.TextSecondary
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,6 +75,7 @@ fun UpdateTaskScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             TopAppBar(
                 title = {
@@ -96,29 +104,32 @@ fun UpdateTaskScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            Button(
-                onClick = { onAction(UpdateTaskUiAction.Submit) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp, bottom = 16.dp)
-                    .height(52.dp),
-                enabled = !uiState.isBusy && uiState.stages.isNotEmpty(),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = OdooPurple)
-            ) {
-                if (uiState.isSubmitting) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.height(24.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Text(
-                        text = "UPDATE STATUS",
-                        fontWeight = FontWeight.Bold
-                    )
+            Column(modifier = Modifier.fillMaxWidth()) {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                Button(
+                    onClick = { onAction(UpdateTaskUiAction.Submit) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 16.dp, bottom = 16.dp)
+                        .height(52.dp),
+                    enabled = !uiState.isBusy && uiState.stages.isNotEmpty(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = OdooPurple)
+                ) {
+                    if (uiState.isSubmitting) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.height(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(
+                            text = "UPDATE STATUS",
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
@@ -137,61 +148,97 @@ fun UpdateTaskScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 24.dp, vertical = 16.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    ReadOnlyField(
-                        label = "Task Title",
-                        value = uiState.taskTitle
+                    TaskInfoHeader(
+                        taskTitle = uiState.taskTitle,
+                        deadline = uiState.deadline
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    ReadOnlyField(
-                        label = "Deadline",
-                        value = uiState.deadline.ifBlank { "No due date" }
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    ExposedDropdownMenuBox(
-                        expanded = stageDropdownExpanded,
-                        onExpandedChange = { expanded ->
-                            if (!uiState.isBusy) stageDropdownExpanded = expanded
-                        },
-                        modifier = Modifier.fillMaxWidth()
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
                     ) {
-                        OutlinedTextField(
-                            value = uiState.selectedStageName,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Stage") },
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = stageDropdownExpanded)
-                            },
-                            modifier = Modifier
-                                .menuAnchor()
-                                .fillMaxWidth(),
-                            enabled = !uiState.isBusy && uiState.stages.isNotEmpty(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = OdooPurple,
-                                focusedLabelColor = OdooPurple,
-                                unfocusedLabelColor = TextSecondary
-                            )
+                        Text(
+                            text = "Status",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = TextPrimary
                         )
-                        ExposedDropdownMenu(
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        ExposedDropdownMenuBox(
                             expanded = stageDropdownExpanded,
-                            onDismissRequest = { stageDropdownExpanded = false }
+                            onExpandedChange = { expanded ->
+                                if (!uiState.isBusy) stageDropdownExpanded = expanded
+                            },
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            uiState.stages.forEach { stage ->
-                                DropdownMenuItem(
-                                    text = { Text(stage.name) },
-                                    onClick = {
-                                        onAction(UpdateTaskUiAction.StageSelected(stage.id))
-                                        stageDropdownExpanded = false
-                                    }
+                            OutlinedTextField(
+                                value = uiState.selectedStageName,
+                                onValueChange = {},
+                                readOnly = true,
+                                placeholder = { Text("Select status") },
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(
+                                        expanded = stageDropdownExpanded
+                                    )
+                                },
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .fillMaxWidth(),
+                                enabled = !uiState.isBusy && uiState.stages.isNotEmpty(),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.outline,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                    disabledBorderColor = MaterialTheme.colorScheme.outline
                                 )
+                            )
+                            ExposedDropdownMenu(
+                                expanded = stageDropdownExpanded,
+                                onDismissRequest = { stageDropdownExpanded = false }
+                            ) {
+                                uiState.stages.forEach { stage ->
+                                    val isSelected = stage.id == uiState.selectedStageId
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                text = stage.name,
+                                                color = if (isSelected) {
+                                                    Color.White
+                                                } else {
+                                                    TextPrimary
+                                                }
+                                            )
+                                        },
+                                        onClick = {
+                                            onAction(UpdateTaskUiAction.StageSelected(stage.id))
+                                            stageDropdownExpanded = false
+                                        },
+                                        modifier = if (isSelected) {
+                                            Modifier.background(OdooPurple)
+                                        } else {
+                                            Modifier
+                                        },
+                                        trailingIcon = if (isSelected) {
+                                            {
+                                                Icon(
+                                                    imageVector = Icons.Default.Check,
+                                                    contentDescription = null,
+                                                    tint = Color.White
+                                                )
+                                            }
+                                        } else {
+                                            null
+                                        },
+                                        colors = MenuDefaults.itemColors(
+                                            textColor = if (isSelected) Color.White else TextPrimary
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
@@ -199,26 +246,4 @@ fun UpdateTaskScreen(
             }
         }
     }
-}
-
-@Composable
-private fun ReadOnlyField(
-    label: String,
-    value: String,
-    modifier: Modifier = Modifier
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = {},
-        label = { Text(label) },
-        modifier = modifier.fillMaxWidth(),
-        readOnly = true,
-        enabled = false,
-        shape = RoundedCornerShape(12.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            disabledTextColor = MaterialTheme.colorScheme.onSurface,
-            disabledLabelColor = TextSecondary,
-            disabledBorderColor = MaterialTheme.colorScheme.outline
-        )
-    )
 }
