@@ -51,6 +51,10 @@ class DashboardViewModel @Inject constructor(
                 _uiState.update { it.copy(successMessage = "Task updated successfully!") }
                 loadDashboard(isRefresh = true)
             }
+            DashboardUiAction.RefreshAfterAccountUpdated -> {
+                _uiState.update { it.copy(successMessage = "Account updated successfully!") }
+                loadDashboard(isRefresh = true)
+            }
             DashboardUiAction.Logout -> logout()
             DashboardUiAction.ErrorDismissed -> _uiState.update { it.copy(errorMessage = null) }
             DashboardUiAction.SuccessDismissed -> _uiState.update { it.copy(successMessage = null) }
@@ -82,6 +86,7 @@ class DashboardViewModel @Inject constructor(
                     _uiState.value = DashboardUiState(
                         isLoading = false,
                         isRefreshing = false,
+                        userId = user.id,
                         userName = user.name,
                         userEmail = user.email.ifBlank { user.login },
                         userInitials = buildInitials(user.name),
@@ -132,5 +137,6 @@ class DashboardViewModel @Inject constructor(
     companion object {
         const val REFRESH_DASHBOARD_KEY = "refresh_dashboard"
         const val REFRESH_AFTER_TASK_UPDATED = "refresh_after_task_updated"
+        const val REFRESH_AFTER_ACCOUNT_UPDATED = "refresh_after_account_updated"
     }
 }

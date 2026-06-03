@@ -21,6 +21,9 @@ import com.gwproductsusa.gwtasks.presentation.dashboard.DashboardViewModel
 import com.gwproductsusa.gwtasks.presentation.login.LoginScreen
 import com.gwproductsusa.gwtasks.presentation.login.LoginUiEvent
 import com.gwproductsusa.gwtasks.presentation.login.LoginViewModel
+import com.gwproductsusa.gwtasks.presentation.updateaccount.UpdateAccountScreen
+import com.gwproductsusa.gwtasks.presentation.updateaccount.UpdateAccountUiEvent
+import com.gwproductsusa.gwtasks.presentation.updateaccount.UpdateAccountViewModel
 import com.gwproductsusa.gwtasks.presentation.updatetask.UpdateTaskScreen
 import com.gwproductsusa.gwtasks.presentation.updatetask.UpdateTaskUiEvent
 import com.gwproductsusa.gwtasks.presentation.updatetask.UpdateTaskViewModel
@@ -95,10 +98,29 @@ fun GwTasksNavGraph(
                     }
             }
 
+            LaunchedEffect(navController.currentBackStackEntry) {
+                val handle = navController.currentBackStackEntry?.savedStateHandle ?: return@LaunchedEffect
+                handle.getStateFlow(DashboardViewModel.REFRESH_AFTER_ACCOUNT_UPDATED, false)
+                    .collect { shouldRefresh ->
+                        if (shouldRefresh) {
+                            viewModel.onAction(DashboardUiAction.RefreshAfterAccountUpdated)
+                            handle[DashboardViewModel.REFRESH_AFTER_ACCOUNT_UPDATED] = false
+                        }
+                    }
+            }
+
             DashboardScreen(
                 uiState = uiState,
                 onAction = viewModel::onAction,
                 onCreateTaskClick = { navController.navigate(Routes.CREATE_TASK) },
+                onProfileClick = {
+                    navController.navigate(
+                        Routes.updateAccount(
+                            userId = uiState.userId,
+                            userName = uiState.userName
+                        )
+                    )
+                },
                 onTaskClick = { task ->
                     navController.navigate(
                         Routes.updateTask(
@@ -161,6 +183,35 @@ fun GwTasksNavGraph(
             }
 
             UpdateTaskScreen(
+                uiState = uiState,
+                onAction = viewModel::onAction
+            )
+        }
+
+        composable(
+            route = "${Routes.UPDATE_ACCOUNT}/{${UpdateAccountViewModel.ARG_USER_ID}}/{${UpdateAccountViewModel.ARG_USER_NAME}}",
+            arguments = listOf(
+                navArgument(UpdateAccountViewModel.ARG_USER_ID) { type = NavType.IntType },
+                navArgument(UpdateAccountViewModel.ARG_USER_NAME) { type = NavType.StringType }
+            )
+        ) {
+            val viewModel: UpdateAccountViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+            LaunchedEffect(Unit) {
+                viewModel.uiEvents.collectLatest { event ->
+                    when (event) {
+                        UpdateAccountUiEvent.NavigateBack -> navController.popBackStack()
+                        UpdateAccountUiEvent.NavigateBackAndRefresh -> {
+                            navController.getBackStackEntry(Routes.DASHBOARD)
+                                .savedStateHandle[DashboardViewModel.REFRESH_AFTER_ACCOUNT_UPDATED] = true
+                            navController.popBackStack()
+                        }
+                    }
+                }
+            }
+
+            UpdateAccountScreen(
                 uiState = uiState,
                 onAction = viewModel::onAction
             )

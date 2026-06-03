@@ -6,6 +6,7 @@ import com.gwproductsusa.gwtasks.domain.model.TaskStage
 @Immutable
 data class DashboardUiState(
     val isLoading: Boolean = true,
+    val userId: Int = 0,
     val userName: String = "",
     val userEmail: String = "",
     val userInitials: String = "",
@@ -34,6 +35,7 @@ sealed interface DashboardUiAction {
     data object Refresh : DashboardUiAction
     data object RefreshAfterTaskCreated : DashboardUiAction
     data object RefreshAfterTaskUpdated : DashboardUiAction
+    data object RefreshAfterAccountUpdated : DashboardUiAction
     data object Logout : DashboardUiAction
     data object ErrorDismissed : DashboardUiAction
     data object SuccessDismissed : DashboardUiAction

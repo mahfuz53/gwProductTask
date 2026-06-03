@@ -28,4 +28,7 @@ interface OdooApi {
 
     @POST("jsonrpc")
     suspend fun updateTask(@Body request: JsonRpcRequestDto): JsonRpcResponseDto<Boolean>
+
+    @POST("jsonrpc")
+    suspend fun updateUser(@Body request: JsonRpcRequestDto): JsonRpcResponseDto<Boolean>
 }

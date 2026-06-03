@@ -216,6 +216,26 @@ class OdooRepositoryImpl @Inject constructor(
             }
         }
 
+    override suspend fun updateUserName(userId: Int, name: String): Result<Boolean> =
+        executeAuthenticated { uid, password, database ->
+            try {
+                val request = UpdateRequest.forUser(
+                    gson = gson,
+                    database = database,
+                    userId = uid,
+                    password = password,
+                    targetUserId = userId,
+                    values = mapOf("name" to name),
+                    requestId = 2
+                ).build()
+                val response = api.updateUser(request)
+                response.error?.let { return@executeAuthenticated Result.Error(errorMapper.mapJsonRpcError(it)) }
+                Result.Success(response.result == true)
+            } catch (e: Exception) {
+                Result.Error(errorMapper.mapThrowable(e))
+            }
+        }
+
     override suspend fun logout() {
         appLogger.d(AppLogger.TAG_REPOSITORY, "logout() clearing session")
         sessionManager.clearSession()

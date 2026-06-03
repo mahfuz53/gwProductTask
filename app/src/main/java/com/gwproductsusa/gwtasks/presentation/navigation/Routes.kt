@@ -7,6 +7,13 @@ object Routes {
     const val DASHBOARD = "dashboard"
     const val CREATE_TASK = "create_task"
     const val UPDATE_TASK = "update_task"
+    const val UPDATE_ACCOUNT = "update_account"
+
+    fun updateAccount(userId: Int, userName: String): String = buildString {
+        append(UPDATE_ACCOUNT)
+        append("/$userId")
+        append("/${encodeNavArg(userName)}")
+    }
 
     fun updateTask(
         taskId: Int,

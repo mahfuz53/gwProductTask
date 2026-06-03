@@ -14,5 +14,6 @@ interface OdooRepository {
     suspend fun createTask(input: CreateTaskInput): Result<Int>
     suspend fun fetchStages(): Result<List<Stage>>
     suspend fun updateTaskStage(taskId: Int, stageId: Int): Result<Boolean>
+    suspend fun updateUserName(userId: Int, name: String): Result<Boolean>
     suspend fun logout()
 }

@@ -37,7 +37,8 @@ fun DashboardScreen(
     uiState: DashboardUiState,
     onAction: (DashboardUiAction) -> Unit,
     onCreateTaskClick: () -> Unit,
-    onTaskClick: (TaskItemUiState) -> Unit
+    onTaskClick: (TaskItemUiState) -> Unit,
+    onProfileClick: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val onRefresh = rememberUpdatedState { onAction(DashboardUiAction.Refresh) }
@@ -100,6 +101,7 @@ fun DashboardScreen(
                 uiState = uiState,
                 taskCountText = taskCountText,
                 onTaskClick = onTaskClick,
+                onProfileClick = onProfileClick,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
@@ -113,6 +115,7 @@ private fun DashboardContent(
     uiState: DashboardUiState,
     taskCountText: String,
     onTaskClick: (TaskItemUiState) -> Unit,
+    onProfileClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -124,7 +127,8 @@ private fun DashboardContent(
             ProfileCard(
                 userName = uiState.userName,
                 userEmail = uiState.userEmail,
-                userInitials = uiState.userInitials
+                userInitials = uiState.userInitials,
+                onClick = onProfileClick
             )
         }
 

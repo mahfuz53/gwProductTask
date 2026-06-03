@@ -45,5 +45,24 @@ class UpdateRequest(
             recordIds = listOf(taskId),
             values = values
         )
+
+        fun forUser(
+            gson: Gson,
+            database: String,
+            userId: Int,
+            password: String,
+            targetUserId: Int,
+            values: Map<String, Any?>,
+            requestId: Int = 2
+        ): UpdateRequest = UpdateRequest(
+            gson = gson,
+            requestId = requestId,
+            database = database,
+            userId = userId,
+            password = password,
+            model = "res.users",
+            recordIds = listOf(targetUserId),
+            values = values
+        )
     }
 }
