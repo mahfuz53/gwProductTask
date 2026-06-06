@@ -45,6 +45,11 @@ The app is designed for clarity and speed: focused screens, clear feedback (load
 - Floating action button to create tasks quickly  
 
 ---
+## Screenshots
+
+https://github.com/user-attachments/assets/cee14c5e-5040-4f87-ba7c-549e79a4c205
+
+---
 
 
 ## Architecture
